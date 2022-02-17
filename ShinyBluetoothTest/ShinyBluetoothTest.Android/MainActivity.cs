@@ -13,6 +13,7 @@ using Shiny;
 
 namespace ShinyBluetoothTest.Droid
 {
+    [Activity(Label = "Shiny Bluetooth Test", MainLauncher = true)]
     public partial class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         //protected override void OnCreate(Bundle savedInstanceState)
