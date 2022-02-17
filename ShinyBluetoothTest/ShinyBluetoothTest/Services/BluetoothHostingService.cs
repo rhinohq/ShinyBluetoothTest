@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 
 using ShinyBluetoothTest.EventArgs;
+using ShinyBluetoothTest.Extensions;
 
 using Shiny;
 using Shiny.BluetoothLE.Hosting;
@@ -14,6 +16,8 @@ namespace ShinyBluetoothTest.Services
     {
         public event EventHandler<DataReceivedEventArgs> OnReceivedData;
 
+        private Dictionary<string, List<byte>> incomingMessages;
+
         readonly IBleHostingManager hostingManager;
         IGattCharacteristic dataCharacteristic;
 
@@ -22,6 +26,8 @@ namespace ShinyBluetoothTest.Services
         public BluetoothHostingService(IBleHostingManager ble)
         {
             hostingManager = ble;
+
+            incomingMessages = new Dictionary<string, List<byte>>();
         }
 
         public async Task SetupServer()
@@ -41,8 +47,6 @@ namespace ShinyBluetoothTest.Services
             {
                 await hostingManager.StartAdvertising(new AdvertisementOptions
                 {
-                    LocalName = "RKendrickChat",
-                    AndroidIncludeDeviceName = true,
                     UseGattServiceUuids = true
                 });
             }
@@ -92,10 +96,14 @@ namespace ShinyBluetoothTest.Services
                 {
                     cb.SetWrite(request =>
                     {
-                        var args = new DataReceivedEventArgs(request.Data);
-                        args.SenderId = request.Peripheral.Uuid;
+                        byte[] data;
 
-                        OnReceivedData?.Invoke(this, args);
+                        if (request.Offset > 0)
+                            data = request.Data[request.Offset..request.Data.Length];
+                        else
+                            data = request.Data;
+
+                        ReceiveData(request.Peripheral.Uuid, data);
 
                         return GattState.Success;
                     });
@@ -104,6 +112,33 @@ namespace ShinyBluetoothTest.Services
                     cb.SetNotification();
                 }
             );
+        }
+
+        private void ReceiveData(string senderId, byte[] data)
+        {
+            int endIndex = data.GetIndexOfTerminator();
+
+            if (endIndex == -1) // Only a chunk of the full message
+            {
+                if (!incomingMessages.ContainsKey(senderId))
+                    incomingMessages[senderId] = new List<byte>();
+
+                incomingMessages[senderId].AddRange(data);
+            }
+            else
+            {
+                byte[] message = data[0..endIndex];
+
+                if (incomingMessages.ContainsKey(senderId)) // Piece together with the other chunks of data we have received
+                {
+                    incomingMessages[senderId].AddRange(message);
+
+                    message = incomingMessages[senderId].ToArray();
+                }
+
+                var args = new DataReceivedEventArgs(senderId, message);
+                OnReceivedData?.Invoke(this, args);
+            }
         }
     }
 }
