@@ -14,7 +14,7 @@ namespace ShinyBluetoothTest.Models
         public List<IDisposable> NotificationSubs { get; private set; }
 
         public string Id => ManagedPeripheral?.Peripheral.Uuid;
-        public bool IsConnected => ManagedPeripheral != null ? ManagedPeripheral.Peripheral.IsConnected() : false;
+        public bool IsConnected => ManagedPeripheral != null && ManagedPeripheral.Peripheral.IsConnected();
 
         public BluetoothDevice()
         {
