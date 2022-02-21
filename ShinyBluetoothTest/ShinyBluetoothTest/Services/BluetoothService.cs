@@ -101,14 +101,7 @@ namespace ShinyBluetoothTest.Services
 
         private void ReceiveData(object sender, DataReceivedEventArgs args)
         {
-            TestRequest meshMessage;
-
-            using (var stream = new MemoryStream(args.Data))
-            {
-                meshMessage = Serializer.Deserialize<TestRequest>(stream);
-            }
-
-            System.Diagnostics.Debug.WriteLine(meshMessage.Data);
+            OnReceivedData?.Invoke(this, args);
         }
 
         private string RandomString(int length)

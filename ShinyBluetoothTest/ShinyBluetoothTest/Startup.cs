@@ -13,6 +13,7 @@ namespace ShinyBluetoothTest
             services.UseBleClient();
             services.UseBleHosting();
 
+            services.AddSingleton<IDialogService, DialogService>();
             services.AddSingleton<ITransportLayer, BluetoothService>();
             services.AddSingleton<BluetoothClientService>();
             services.AddSingleton<BluetoothHostingService>();
