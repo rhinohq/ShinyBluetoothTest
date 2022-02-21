@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using ShinyBluetoothTest.EventArgs;
 using ShinyBluetoothTest.Extensions;
+using ShinyBluetoothTest.Models;
 
 using Shiny;
 using Shiny.BluetoothLE.Hosting;
@@ -16,7 +17,7 @@ namespace ShinyBluetoothTest.Services
     {
         public event EventHandler<DataReceivedEventArgs> OnReceivedData;
 
-        private Dictionary<string, List<byte>> incomingMessages;
+        private Dictionary<string, IncomingMessage> incomingMessages;
 
         readonly IBleHostingManager hostingManager;
         IGattCharacteristic dataCharacteristic;
@@ -27,7 +28,7 @@ namespace ShinyBluetoothTest.Services
         {
             hostingManager = ble;
 
-            incomingMessages = new Dictionary<string, List<byte>>();
+            incomingMessages = new Dictionary<string, IncomingMessage>();
         }
 
         public async Task SetupServer()
@@ -116,29 +117,68 @@ namespace ShinyBluetoothTest.Services
 
         private void ReceiveData(string senderId, byte[] data)
         {
-            int endIndex = data.GetIndexOfTerminator();
-
-            if (endIndex == -1) // Only a chunk of the full message
+            if (incomingMessages.ContainsKey(senderId)) // Incoming message
             {
-                if (!incomingMessages.ContainsKey(senderId))
-                    incomingMessages[senderId] = new List<byte>();
-
-                incomingMessages[senderId].AddRange(data);
+                ProcessIncomingMessage(senderId, data);
             }
-            else
+            else // New Message
             {
-                byte[] message = data[0..endIndex];
+                ProcessNewMessage(senderId, data);
+            }
+        }
 
-                if (incomingMessages.ContainsKey(senderId)) // Piece together with the other chunks of data we have received
+        private void ProcessNewMessage(string senderId, byte[] data)
+        {
+            int messageLength = data.ParseMessageLength();
+            byte[] frameData = data[4..];
+
+            if (frameData.Length == messageLength)
+            {
+                SubmitData(senderId, frameData);
+            }
+            else if (frameData.Length > messageLength)
+            {
+                SubmitData(senderId, frameData[..messageLength]);
+            }
+            else // We have not received the full message
+            {
+                var message = new IncomingMessage(messageLength, frameData);
+
+                incomingMessages.Add(senderId, message);
+            }
+        }
+
+        private void ProcessIncomingMessage(string senderId, byte[] data)
+        {
+            var incomingMessage = incomingMessages[senderId];
+            var collectedDataSize = incomingMessage.Data.Count + data.Length;
+
+            if (incomingMessage.FullLength > collectedDataSize) // We don't have all of the message yet
+            {
+                incomingMessage.Data.AddRange(data);
+            }
+            else // We have all of the message
+            {
+                if (incomingMessage.FullLength == collectedDataSize)
                 {
-                    incomingMessages[senderId].AddRange(message);
+                    incomingMessage.Data.AddRange(data);
+                }
+                else // We have collected more data than needed so trim
+                {
+                    var excessAmountOfDataInFrame = collectedDataSize - incomingMessage.FullLength;
 
-                    message = incomingMessages[senderId].ToArray();
+                    incomingMessage.Data.AddRange(data[..^excessAmountOfDataInFrame]);
                 }
 
-                var args = new DataReceivedEventArgs(senderId, message);
-                OnReceivedData?.Invoke(this, args);
+                SubmitData(senderId, incomingMessage.Data.ToArray());
             }
+        }
+
+        private void SubmitData(string senderId, byte[] submissionData)
+        {
+            var args = new DataReceivedEventArgs(senderId, submissionData);
+            OnReceivedData?.Invoke(this, args);
         }
     }
 }
+

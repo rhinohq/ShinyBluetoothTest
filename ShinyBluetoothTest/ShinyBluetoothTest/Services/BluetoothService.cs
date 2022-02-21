@@ -1,7 +1,10 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+
 using ProtoBuf;
+
 using ShinyBluetoothTest.EventArgs;
 using ShinyBluetoothTest.Interfaces;
 using ShinyBluetoothTest.Models;
@@ -79,11 +82,10 @@ namespace ShinyBluetoothTest.Services
         private void ConnectDevice(object sender, DeviceConnectedEventArgs args)
         {
             byte[] data;
+            var req = new TestRequest() { Data = RandomString(50), Type = TestType.Test };
 
             using (var stream = new MemoryStream())
             {
-                var req = new TestRequest() { Data = DateTime.Now.ToString(), Type = TestType.Test };
-
                 Serializer.Serialize(stream, req);
 
                 data = stream.ToArray();
@@ -105,6 +107,16 @@ namespace ShinyBluetoothTest.Services
             {
                 meshMessage = Serializer.Deserialize<TestRequest>(stream);
             }
+
+            System.Diagnostics.Debug.WriteLine(meshMessage.Data);
+        }
+
+        private string RandomString(int length)
+        {
+            Random random = new Random();
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
         }
     }
 }

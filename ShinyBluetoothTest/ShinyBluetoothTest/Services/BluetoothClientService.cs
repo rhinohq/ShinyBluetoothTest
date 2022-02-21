@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using ReactiveUI;
 
 using ShinyBluetoothTest.EventArgs;
+using ShinyBluetoothTest.Extensions;
 using ShinyBluetoothTest.Models;
 
 using Shiny.BluetoothLE;
@@ -92,10 +93,12 @@ namespace ShinyBluetoothTest.Services
 
             if (btDevice != null && btDevice.ManagedPeripheral.Status == ConnectionState.Connected)
             {
+                var messageFrame = data.AddLengthHeader();
+
                 await btDevice.ManagedPeripheral.WriteBlob(
                     BluetoothConstants.PeripheralServiceId,
                     BluetoothConstants.DataCharacteristicId,
-                    new MemoryStream(data)
+                    new MemoryStream(messageFrame)
                 ).ToTask();
             }
         }
