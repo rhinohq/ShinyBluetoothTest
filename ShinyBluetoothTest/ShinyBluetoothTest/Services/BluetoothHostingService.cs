@@ -110,7 +110,7 @@ namespace ShinyBluetoothTest.Services
                     });
 
                     cb.SetRead(request => ReadResult.Success(new byte[0]));
-                    cb.SetNotification();
+                    cb.SetNotification(sub => RefreshConnection(sub.Peripheral.Uuid));
                 }
             );
         }
@@ -178,6 +178,17 @@ namespace ShinyBluetoothTest.Services
         {
             var args = new DataReceivedEventArgs(senderId, submissionData);
             OnReceivedData?.Invoke(this, args);
+        }
+
+        private void RefreshConnection(string transportId)
+        {
+            if (incomingMessages.ContainsKey(transportId))
+                incomingMessages.Remove(transportId);
+
+            var device = dataCharacteristic.SubscribedCentrals.FirstOrDefault(x => x.Uuid == transportId);
+            int mtu = device.Mtu;
+
+            System.Diagnostics.Debug.WriteLine($"MTU Size: {mtu} bytes");
         }
     }
 }
