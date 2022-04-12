@@ -38,7 +38,9 @@ namespace ShinyBluetoothTest.Services
 
         public async Task ConnectAsync()
         {
+            bluetoothClientService.ConnectToPairedDevices();
             await bluetoothClientService.StartScanningAsync();
+
             await bluetoothHostingService.SetupServer();
         }
 

@@ -53,6 +53,19 @@ namespace ShinyBluetoothTest.Services
             btDevices.Clear();
         }
 
+        public void ConnectToPairedDevices()
+        {
+            if (bleManager == null)
+                return;
+
+            var paired = bleManager.TryGetPairedPeripherals().Subscribe(paired => {
+                foreach (var device in paired)
+                {
+                    ConnectToDevice(device);
+                }
+            });
+        }
+
         public async Task StartScanningAsync()
         {
             if (bleManager == null || bleManager.IsScanning)

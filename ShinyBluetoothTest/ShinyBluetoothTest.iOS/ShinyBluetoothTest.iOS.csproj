@@ -137,21 +137,38 @@
   <ItemGroup>
     <PackageReference Include="Xamarin.Forms" Version="5.0.0.2401" />
     <PackageReference Include="Xamarin.Essentials" Version="1.7.1" />
-    <PackageReference Include="Shiny">
-      <Version>2.4.3.3024</Version>
-    </PackageReference>
-    <PackageReference Include="Shiny.BluetoothLE">
-      <Version>2.4.3.3024</Version>
-    </PackageReference>
-    <PackageReference Include="Shiny.BluetoothLE.Hosting">
-      <Version>2.4.3.3024</Version>
-    </PackageReference>
     <PackageReference Include="ReactiveUI.Fody">
       <Version>17.1.50</Version>
     </PackageReference>
     <PackageReference Include="protobuf-net">
       <Version>3.0.101</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\shiny\src\Shiny.BluetoothLE.Hosting\Shiny.BluetoothLE.Hosting.csproj">
+      <Project>{24DFF8DA-E48E-46ED-8771-688B7A127BDE}</Project>
+      <Name>Shiny.BluetoothLE.Hosting</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\shiny\src\Shiny.BluetoothLE\Shiny.BluetoothLE.csproj">
+      <Project>{0D245CE6-0AC8-4507-93C4-E41405CFB4F7}</Project>
+      <Name>Shiny.BluetoothLE</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\shiny\src\Shiny\Shiny.csproj">
+      <Project>{A27CE048-23EA-43F5-B288-A93F4B487070}</Project>
+      <Name>Shiny</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\shiny\src\Shiny.Jobs\Shiny.Jobs.csproj">
+      <Project>{F6E13575-5D40-44C7-847E-F07DD99A6095}</Project>
+      <Name>Shiny.Jobs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\shiny\src\Shiny.Core\Shiny.Core.csproj">
+      <Project>{EAD19393-F039-4923-9339-ACD7569B2C37}</Project>
+      <Name>Shiny.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\shiny\src\Shiny.BluetoothLE.Common\Shiny.BluetoothLE.Common.csproj">
+      <Project>{ABDB6A5C-683E-4F2E-B841-05E065DC7D24}</Project>
+      <Name>Shiny.BluetoothLE.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\ShinyBluetoothTest\ShinyBluetoothTest.projitems" Label="Shared" />
