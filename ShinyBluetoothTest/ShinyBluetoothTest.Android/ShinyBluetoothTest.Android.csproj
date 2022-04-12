@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -44,7 +44,7 @@
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
   </PropertyGroup>
   <PropertyGroup>
-   <LangVersion>9.0</LangVersion>
+    <LangVersion>9.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Android" />
@@ -58,17 +58,11 @@
     <Reference Include="Mono.Android.Export" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="Xamarin.Forms" Version="5.0.0.2401" />
     <PackageReference Include="Xamarin.Essentials" Version="1.7.1" />
-    <PackageReference Include="Shiny">
-      <Version>2.4.3.3024</Version>
-    </PackageReference>
-    <PackageReference Include="Shiny.BluetoothLE">
-      <Version>2.4.3.3024</Version>
-    </PackageReference>
-    <PackageReference Include="Shiny.BluetoothLE.Hosting">
-      <Version>2.4.3.3024</Version>
-    </PackageReference>
     <PackageReference Include="ReactiveUI.Fody">
       <Version>17.1.50</Version>
     </PackageReference>
@@ -105,6 +99,32 @@
     <AndroidResource Include="Resources\drawable\icon_about.png" />
     <AndroidResource Include="Resources\drawable\icon_feed.png" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:\Git\github.com\shinyorg\shiny\src\Shiny.BluetoothLE.Common\Shiny.BluetoothLE.Common.csproj">
+      <Project>{b9cacc6e-740f-417b-8adf-01a8bd16085f}</Project>
+      <Name>Shiny.BluetoothLE.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Git\github.com\shinyorg\shiny\src\Shiny.BluetoothLE.Hosting\Shiny.BluetoothLE.Hosting.csproj">
+      <Project>{7c617592-8f95-420a-9b22-0309bde9480a}</Project>
+      <Name>Shiny.BluetoothLE.Hosting</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Git\github.com\shinyorg\shiny\src\Shiny.BluetoothLE\Shiny.BluetoothLE.csproj">
+      <Project>{8e1d56dc-72b2-4412-be57-42436f26e07b}</Project>
+      <Name>Shiny.BluetoothLE</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Git\github.com\shinyorg\shiny\src\Shiny.Core\Shiny.Core.csproj">
+      <Project>{d119d2d7-8b55-4c9d-8aa3-c99a79ededd4}</Project>
+      <Name>Shiny.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Git\github.com\shinyorg\shiny\src\Shiny.Jobs\Shiny.Jobs.csproj">
+      <Project>{71b9ae6f-738e-411b-bf47-c796aea69247}</Project>
+      <Name>Shiny.Jobs</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Git\github.com\shinyorg\shiny\src\Shiny\Shiny.csproj">
+      <Project>{2ae91154-48f6-423a-a7ce-9ef849ceedbc}</Project>
+      <Name>Shiny</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="..\ShinyBluetoothTest\ShinyBluetoothTest.projitems" Label="Shared" />
- <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>
